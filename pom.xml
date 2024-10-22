@@ -623,19 +623,19 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.server.api</groupId>
-                <artifactId>org.wso2.carbon.identity.api.server.organization.user.share.management.common</artifactId>
+                <artifactId>org.wso2.carbon.identity.api.server.organization.user.sharing.management.common</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.server.api</groupId>
-                <artifactId>org.wso2.carbon.identity.api.server.organization.user.share.management.v1</artifactId>
+                <artifactId>org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.organization.management</groupId>
-                <artifactId>org.wso2.carbon.identity.organization.user.share.management</artifactId>
+                <artifactId>org.wso2.carbon.identity.organization.user.sharing.management</artifactId>
                 <version>${org.wso2.carbon.identity.organization.management.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -895,7 +895,7 @@
         <module>components/org.wso2.carbon.identity.api.idle.account.identification</module>
         <module>components/org.wso2.carbon.identity.api.expired.password.identification</module>
         <module>components/org.wso2.carbon.identity.api.server.organization.user.invitation.management</module>
-        <module>components/org.wso2.carbon.identity.api.server.organization.user.share.management</module>
+        <module>components/org.wso2.carbon.identity.api.server.organization.user.sharing.management</module>
         <module>components/org.wso2.carbon.identity.api.server.api.resource</module>
         <module>components/org.wso2.carbon.identity.api.server.organization.configs</module>
         <module>components/org.wso2.carbon.identity.api.server.organization.selfservice</module>
