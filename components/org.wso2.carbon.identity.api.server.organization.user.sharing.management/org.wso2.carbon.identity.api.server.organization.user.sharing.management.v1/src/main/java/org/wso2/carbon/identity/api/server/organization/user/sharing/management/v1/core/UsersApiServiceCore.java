@@ -34,6 +34,7 @@ import org.wso2.carbon.identity.organization.management.organization.user.sharin
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserCriteria;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserShareGeneralDO;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserShareSelectiveDO;
+import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserUnshareSelectiveDO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +139,25 @@ public class UsersApiServiceCore {
      * @param userUnshareRequestBody Contains details for user unsharing.
      */
     public void unshareUser(UserUnshareRequestBody userUnshareRequestBody) {
-        // Core logic for unsharing the user from specified organizations
+
+        UserSharingPolicyHandlerServiceImpl userSharingPolicyHandlerService = new UserSharingPolicyHandlerServiceImpl();
+
+        List<String> userIds = userUnshareRequestBody.getUserCriteria().getUserIds();
+        List<String> organizations = userUnshareRequestBody.getOrganizations();
+
+        for(String userId : userIds) {
+            UserUnshareSelectiveDO userUnshareSelectiveDO = new UserUnshareSelectiveDO();
+            userUnshareSelectiveDO.setUserId(userId);
+            userUnshareSelectiveDO.setOrganizations(organizations);
+
+            try{
+                userSharingPolicyHandlerService.propagateSelectiveUnshare(userUnshareSelectiveDO);
+            } catch (Exception e) {
+                // do something
+            }
+
+        }
+
     }
 
     /**
