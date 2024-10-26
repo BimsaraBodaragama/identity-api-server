@@ -34,6 +34,7 @@ import org.wso2.carbon.identity.organization.management.organization.user.sharin
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserCriteria;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserShareGeneralDO;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserShareSelectiveDO;
+import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserUnshareGeneralDO;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserUnshareSelectiveDO;
 
 import java.util.ArrayList;
@@ -166,7 +167,22 @@ public class UsersApiServiceCore {
      * @param userUnshareWithAllRequestBody Contains details for removing shared access.
      */
     public void unshareUserWithAll(UserUnshareWithAllRequestBody userUnshareWithAllRequestBody) {
-        // Core logic for removing user's shared access from all organizations
+
+        UserSharingPolicyHandlerServiceImpl userSharingPolicyHandlerService = new UserSharingPolicyHandlerServiceImpl();
+
+        List<String> userIds = userUnshareWithAllRequestBody.getUserCriteria().getUserIds();
+
+        for(String userId : userIds) {
+            UserUnshareGeneralDO userUnshareGeneralDO = new UserUnshareGeneralDO();
+            userUnshareGeneralDO.setUserId(userId);
+
+            try {
+                userSharingPolicyHandlerService.propagateGeneralUnshare(userUnshareGeneralDO);
+            } catch (Exception e) {
+                // do something
+            }
+        }
+
     }
 
     /**
