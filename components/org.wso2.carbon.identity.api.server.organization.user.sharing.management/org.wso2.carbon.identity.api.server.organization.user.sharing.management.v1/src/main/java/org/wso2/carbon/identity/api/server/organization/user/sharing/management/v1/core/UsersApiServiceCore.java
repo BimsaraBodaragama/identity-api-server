@@ -27,6 +27,7 @@ import org.wso2.carbon.identity.api.server.organization.user.sharing.management.
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.UserUnshareRequestBody;
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.UserUnshareWithAllRequestBody;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.UserSharingPolicyHandlerServiceImpl;
+import org.wso2.carbon.identity.organization.management.organization.user.sharing.constant.SharingPolicyEnum;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.AbstractUserShareDO;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.PolicyBearingOrganization;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.SharedRole;
@@ -59,12 +60,11 @@ public class UsersApiServiceCore {
 
             for(UserShareRequestBodyOrganizations organization : organizations) {
 
+                List<SharedRole> sharedRolesList = getSharedRolesForOrganization(organization);
+
                 UserShareSelectiveDO userShareSelectiveDO = new UserShareSelectiveDO();
                 userShareSelectiveDO.setUserId(userId);
                 userShareSelectiveDO.setOrganizationId(organization.getOrgId());
-
-                List<SharedRole> sharedRolesList = getSharedRoles(organization);
-
                 userShareSelectiveDO.setRoles(sharedRolesList);
 
                 try {
@@ -79,19 +79,11 @@ public class UsersApiServiceCore {
 
     }
 
-    private static List<SharedRole> getSharedRoles(UserShareRequestBodyOrganizations organization) {
-
-        List<SharedRole> sharedRolesList = new ArrayList<>();
+    private List<SharedRole> getSharedRolesForOrganization(UserShareRequestBodyOrganizations organization) {
 
         List<RoleWithAudience> roles = organization.getRoles();
-        for(RoleWithAudience role : roles) {
-            SharedRole sharedRole = new SharedRole();
-            sharedRole.setRoleName(role.getDisplayName());
-            sharedRole.setAudienceName(role.getAudience().getDisplay());
-            sharedRole.setAudienceType(role.getAudience().getType());
-            sharedRolesList.add(sharedRole);
-        }
-        return sharedRolesList;
+
+        return getSharedRoles(roles);
     }
 
     /**
@@ -100,7 +92,44 @@ public class UsersApiServiceCore {
      * @param userShareWithAllRequestBody Contains details for sharing users with all organizations.
      */
     public void shareUserWithAll(UserShareWithAllRequestBody userShareWithAllRequestBody) {
-        // Core logic for sharing the user with all organizations
+
+        UserSharingPolicyHandlerServiceImpl userSharingPolicyHandlerService = new UserSharingPolicyHandlerServiceImpl();
+
+        List<String> userIds = userShareWithAllRequestBody.getUserCriteria().getUserIds();
+        String sharingPolicy = userShareWithAllRequestBody.getPolicy().value();
+
+        for(String userId : userIds) {
+
+            List<SharedRole> sharedRolesList = getSharedRoles(userShareWithAllRequestBody.getRoles());
+
+            UserShareGeneralDO userShareGeneralDO = new UserShareGeneralDO();
+            userShareGeneralDO.setUserId(userId);
+            userShareGeneralDO.setSharingPolicy(sharingPolicy);
+            userShareGeneralDO.setRoles(sharedRolesList);
+
+            try {
+                userSharingPolicyHandlerService.propagateGeneralShare(userShareGeneralDO);
+            } catch (Exception e){
+                //do something
+            }
+
+        }
+
+    }
+
+    private List<SharedRole> getSharedRoles(List<RoleWithAudience> roles) {
+
+        List<SharedRole> sharedRolesList = new ArrayList<>();
+
+        for(RoleWithAudience role : roles) {
+            SharedRole sharedRole = new SharedRole();
+            sharedRole.setRoleName(role.getDisplayName());
+            sharedRole.setAudienceName(role.getAudience().getDisplay());
+            sharedRole.setAudienceType(role.getAudience().getType());
+            sharedRolesList.add(sharedRole);
+        }
+
+        return sharedRolesList;
     }
 
     /**
