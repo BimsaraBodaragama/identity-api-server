@@ -18,6 +18,10 @@
 
 package org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.core;
 
+import org.apache.commons.lang.StringUtils;
+import org.wso2.carbon.identity.api.server.common.error.APIError;
+import org.wso2.carbon.identity.api.server.common.error.ErrorResponse;
+import org.wso2.carbon.identity.api.server.organization.user.share.management.common.UserSharingMgtConstants;
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.RoleWithAudience;
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.UserShareRequestBody;
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.UserShareRequestBodyOrganizations;
@@ -28,6 +32,7 @@ import org.wso2.carbon.identity.api.server.organization.user.sharing.management.
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.UserUnshareWithAllRequestBody;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.UserSharingPolicyHandlerServiceImpl;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.constant.SharingPolicyEnum;
+import org.wso2.carbon.identity.organization.management.organization.user.sharing.constant.UserSharingConstants;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.AbstractUserShareDO;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.PolicyBearingOrganization;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.SharedRole;
@@ -39,6 +44,10 @@ import org.wso2.carbon.identity.organization.management.organization.user.sharin
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.Response;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
  * Core service class for handling user sharing management APIs.
@@ -224,19 +233,56 @@ public class UsersApiServiceCore {
         return response;
     }
 
+
+    private boolean isUnsupportedParamAvailable(Integer limit, Integer offset, String sortOrder, String sortBy) {
+
+        if (limit != null) {
+            throw handleException(BAD_REQUEST, UserSharingMgtConstants.ErrorMessage
+                    .ERROR_CODE_UNSUPPORTED_LIMIT, String.valueOf(limit));
+        }
+        if (offset != null) {
+            throw handleException(BAD_REQUEST, UserSharingMgtConstants.ErrorMessage
+                    .ERROR_CODE_UNSUPPORTED_OFFSET, String.valueOf(offset));
+        }
+        if (StringUtils.isNotBlank(sortOrder)) {
+            throw handleException(BAD_REQUEST, UserSharingMgtConstants.ErrorMessage
+                    .ERROR_CODE_UNSUPPORTED_SORT_ORDER, sortOrder);
+        }
+        if (StringUtils.isNotBlank(sortBy)) {
+            throw handleException(BAD_REQUEST, UserSharingMgtConstants.ErrorMessage
+                    .ERROR_CODE_UNSUPPORTED_SORT_BY, sortBy);
+        }
+        return false;
+    }
+
     /**
      * Helper method to handle exceptions.
      *
      * @param status   HTTP status of the error.
-     * @param errorMsg Error message to be returned.
+     * @param error Error message to be returned.
      * @param data     Additional error data.
      * @return APIError object for error response.
      */
-    /*private APIError handleException(Response.Status status, String errorMsg, String data) {
-        return new APIError(status, new ErrorResponse.Builder()
-                .withCode("ERROR_CODE")
-                .withMessage(errorMsg)
-                .withDescription(data)
-                .build());
-    }*/
+    private APIError handleException(Response.Status status, UserSharingMgtConstants.ErrorMessage error,
+                                     String data) {
+
+        return new APIError(status, getErrorBuilder(error, data).build());
+    }
+
+    private ErrorResponse.Builder getErrorBuilder(UserSharingMgtConstants.ErrorMessage errorMsg, String data) {
+
+        return new ErrorResponse.Builder()
+                .withCode(errorMsg.getCode())
+                .withMessage(errorMsg.getMessage())
+                .withDescription(includeData(errorMsg, data));
+    }
+
+    private String includeData(UserSharingMgtConstants.ErrorMessage error, String data) {
+
+        if (StringUtils.isNotBlank(data)) {
+            return String.format(error.getDescription(), data);
+        }
+        return error.getDescription();
+    }
+
 }
