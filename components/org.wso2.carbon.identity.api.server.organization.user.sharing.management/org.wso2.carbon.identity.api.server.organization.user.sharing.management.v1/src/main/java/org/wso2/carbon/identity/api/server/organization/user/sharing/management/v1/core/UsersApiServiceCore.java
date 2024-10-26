@@ -31,12 +31,7 @@ import org.wso2.carbon.identity.api.server.organization.user.sharing.management.
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.UserUnshareRequestBody;
 import org.wso2.carbon.identity.api.server.organization.user.sharing.management.v1.model.UserUnshareWithAllRequestBody;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.UserSharingPolicyHandlerServiceImpl;
-import org.wso2.carbon.identity.organization.management.organization.user.sharing.constant.SharingPolicyEnum;
-import org.wso2.carbon.identity.organization.management.organization.user.sharing.constant.UserSharingConstants;
-import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.AbstractUserShareDO;
-import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.PolicyBearingOrganization;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.SharedRole;
-import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserCriteria;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserShareGeneralDO;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserShareSelectiveDO;
 import org.wso2.carbon.identity.organization.management.organization.user.sharing.models.UserUnshareGeneralDO;
